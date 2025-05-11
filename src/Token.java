@@ -1,23 +1,16 @@
 public class Token {
-
-    // Enumeração dos tipos de token
     public enum Type {
-        NUMBER,  // Para números
-        PLUS,    // Para o operador '+'
-        MINUS,   // Para o operador '-'
-        EOF      // Para o marcador de final de entrada
+        NUMBER, PLUS, MINUS, TIMES, DIVIDE, EOF
     }
 
     private final Type type;
     private final String value;
 
-    // Construtor para criar um Token com tipo e valor
     public Token(Type type, String value) {
         this.type = type;
         this.value = value;
     }
 
-    // Métodos getters
     public Type getType() {
         return type;
     }

@@ -24,6 +24,16 @@ public class Lexer {
                 return new Token(Token.Type.MINUS, "-");
             }
 
+            if (currentChar == '*') {
+                currentPos++;
+                return new Token(Token.Type.TIMES, "*");
+            }
+
+            if (currentChar == '/') {
+                currentPos++;
+                return new Token(Token.Type.DIVIDE, "/");
+            }
+
             // Ignorar espaços em branco
             if (Character.isWhitespace(currentChar)) {
                 currentPos++;
