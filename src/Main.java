@@ -1,13 +1,11 @@
 public class Main {
     public static void main(String[] args) {
-        String input = """
-            let a = 42 + 5 - 8;
-            let b = 56 + 8;
-            print a + b + 6;
-        """;
+        String code = "let x = 10;\nprint x;";
+        Lexer lexer = new Lexer(code);
 
-        Parser parser = new Parser(input);
-        parser.parse();
+        Token token;
+        while ((token = lexer.getNextToken()).getType() != Token.Type.EOF) {
+            System.out.println(token);
+        }
     }
 }
-

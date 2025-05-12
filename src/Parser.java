@@ -1,85 +1,91 @@
-public class Parser {
-    private final Lexer lexer;
-    private Token currentToken;
+import java.util.ArrayList;
+import java.util.List;
 
-    public Parser(String input) {
-        this.lexer = new Lexer(input);
-        this.currentToken = lexer.getNextToken();
+public class Parser {
+
+    private final Scanner scanner;
+    private Token currentToken;
+    private final List<String> output = new ArrayList<>();
+
+    public Parser(byte[] input) {
+        this.scanner = new Scanner(input);
+        this.currentToken = scanner.nextToken();
     }
 
     public void parse() {
-        statements();
-    }
-
-    private void statements() {
         while (currentToken.getType() != Token.Type.EOF) {
-            statement();
-        }
-    }
-
-    private void statement() {
-        if (currentToken.getType() == Token.Type.LET) {
-            letStatement();
-        } else if (currentToken.getType() == Token.Type.PRINT) {
-            printStatement();
-        } else {
-            throw new RuntimeException("Erro de sintaxe: comando inesperado '" + currentToken.getValue() + "'");
-        }
-    }
-
-    private void letStatement() {
-        match(Token.Type.LET);
-        String varName = currentToken.getValue();
-        match(Token.Type.IDENTIFIER);
-        match(Token.Type.EQUAL);
-        expr();
-        System.out.println("pop " + varName);
-        match(Token.Type.SEMICOLON);
-    }
-
-    private void printStatement() {
-        match(Token.Type.PRINT);
-        expr();
-        System.out.println("print");
-        match(Token.Type.SEMICOLON);
-    }
-
-    private void expr() {
-        term();
-        while (currentToken.getType() == Token.Type.PLUS || currentToken.getType() == Token.Type.MINUS) {
-            Token.Type op = currentToken.getType();
-            advance();
-            term();
-            if (op == Token.Type.PLUS) {
-                System.out.println("add");
+            if (match(Token.Type.LET)) {
+                parseLet();
+            } else if (match(Token.Type.PRINT)) {
+                parsePrint();
             } else {
-                System.out.println("sub");
+                throw new RuntimeException("Comando inválido: " + currentToken.getValue());
             }
         }
     }
 
-    private void term() {
-        if (currentToken.getType() == Token.Type.NUMBER) {
-            System.out.println("push " + currentToken.getValue());
+    public String output() {
+        return String.join(System.lineSeparator(), output);
+    }
+
+    private void parseLet() {
+        String varName = consume(Token.Type.IDENTIFIER, "Esperado nome da variável").getValue();
+        consume(Token.Type.EQUAL, "Esperado '=' após o nome da variável");
+
+        parseExpression();
+
+        output.add("pop " + varName);
+
+        consume(Token.Type.SEMICOLON, "Esperado ';' ao final da instrução");
+    }
+
+    private void parsePrint() {
+        parseExpression();
+        output.add("print");
+        consume(Token.Type.SEMICOLON, "Esperado ';' ao final do print");
+    }
+
+    private void parseExpression() {
+        parseTerm();
+        while (match(Token.Type.PLUS) || match(Token.Type.MINUS)) {
+            Token operator = currentToken;
             advance();
-        } else if (currentToken.getType() == Token.Type.IDENTIFIER) {
-            System.out.println("push " + currentToken.getValue());
-            advance();
-        } else {
-            throw new RuntimeException("Erro de sintaxe: esperado número ou variável, encontrado " + currentToken.getType());
+            parseTerm();
+            if (operator.getType() == Token.Type.PLUS) {
+                output.add("add");
+            } else {
+                output.add("sub");
+            }
         }
     }
 
-    private void match(Token.Type expected) {
-        if (currentToken.getType() == expected) {
+    private void parseTerm() {
+        if (match(Token.Type.NUMBER)) {
+            output.add("push " + currentToken.getValue());
+            advance();
+        } else if (match(Token.Type.IDENTIFIER)) {
+            output.add("push " + currentToken.getValue());
             advance();
         } else {
-            throw new RuntimeException("Erro de sintaxe: esperado " + expected + ", encontrado " + currentToken.getType());
+            throw new RuntimeException("Esperado número ou identificador, mas encontrei: " + currentToken.getValue());
         }
+    }
+
+    private boolean match(Token.Type type) {
+        return currentToken.getType() == type;
+    }
+
+    private Token consume(Token.Type type, String errorMessage) {
+        if (currentToken.getType() != type) {
+            throw new RuntimeException(errorMessage + " Mas encontrei: " + currentToken.getValue());
+        }
+        Token token = currentToken;
+        advance();
+        return token;
     }
 
     private void advance() {
-        currentToken = lexer.getNextToken();
+        currentToken = scanner.nextToken();
     }
 }
 
