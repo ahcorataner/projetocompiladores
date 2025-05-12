@@ -1,0 +1,41 @@
+[33mcommit 04a4032bc3ffc65bdf2528224d149592de1e12a2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Renata Costa Rocha <recr17@hotmail.com>
+Date:   Mon May 12 19:35:07 2025 -0300
+
+    Atualiza implementação do lexer, parser e scanner
+
+[33mcommit 1b2daed485e39fabd9c7d92d608e5c2615359343[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: Renata Costa Rocha <recr17@hotmail.com>
+Date:   Sun May 11 21:08:33 2025 -0300
+
+    feat: adiciona suporte ao comando print e interpretador completo
+
+[33mcommit 1b55105b2a07265c472b6cbe27a78b808ad7ed3e[m
+Author: Renata Costa Rocha <recr17@hotmail.com>
+Date:   Sun May 11 20:59:12 2025 -0300
+
+    Correção do parser, lexer e token para expressões aritméticas
+
+[33mcommit 783b7071b39af9c418be8ba50591741933466b3d[m
+Author: Renata Costa Rocha <recr17@hotmail.com>
+Date:   Wed May 7 18:32:44 2025 -0300
+
+    Implementação do item 2, Analisador Léxico
+
+[33mcommit bae14bc6264147cfed467e89cc0cb656b6a24286[m
+Author: Renata Costa Rocha <recr17@hotmail.com>
+Date:   Tue May 6 20:13:52 2025 -0300
+
+    Adiciona Parser.java e atualiza Main.java para o tradutor de expressões aritméticas
+
+[33mcommit 97d49d9ca9231422140e6e2eb77b898458c19cb4[m
+Author: Renata Costa Rocha <recr17@hotmail.com>
+Date:   Tue May 6 19:20:06 2025 -0300
+
+    Commit inicial: teste com printf e estrutura básica do projeto
+
+[33mcommit 87b574eec10240aad3cb9bb8b09921ae5bb0e98b[m
+Author: ahcorataner <recr17@hotmail.com>
+Date:   Tue May 6 18:57:23 2025 -0300
+
+    Initial commit
