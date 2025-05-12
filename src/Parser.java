@@ -8,39 +8,73 @@ public class Parser {
     }
 
     public void parse() {
-        try {
-            expr();
-            if (currentToken.getType() != Token.Type.EOF) {
-                throw new RuntimeException("Erro de sintaxe: entrada extra após o fim da expressão");
-            }
-        } catch (RuntimeException e) {
-            System.err.println("Erro de análise: " + e.getMessage());
+        statements();
+    }
+
+    private void statements() {
+        while (currentToken.getType() != Token.Type.EOF) {
+            statement();
         }
+    }
+
+    private void statement() {
+        if (currentToken.getType() == Token.Type.LET) {
+            letStatement();
+        } else if (currentToken.getType() == Token.Type.PRINT) {
+            printStatement();
+        } else {
+            throw new RuntimeException("Erro de sintaxe: comando inesperado '" + currentToken.getValue() + "'");
+        }
+    }
+
+    private void letStatement() {
+        match(Token.Type.LET);
+        String varName = currentToken.getValue();
+        match(Token.Type.IDENTIFIER);
+        match(Token.Type.EQUAL);
+        expr();
+        System.out.println("pop " + varName);
+        match(Token.Type.SEMICOLON);
+    }
+
+    private void printStatement() {
+        match(Token.Type.PRINT);
+        expr();
+        System.out.println("print");
+        match(Token.Type.SEMICOLON);
     }
 
     private void expr() {
-        number();
-        oper();
-    }
-
-    private void oper() {
-        while (currentToken.getType() == Token.Type.PLUS ||
-                currentToken.getType() == Token.Type.MINUS ||
-                currentToken.getType() == Token.Type.TIMES ||
-                currentToken.getType() == Token.Type.DIVIDE) {
-            String operador = currentToken.getValue();
-            advance(); // consome o operador
-            number();  // espera outro número após o operador
-            System.out.println(operador); // imprime o operador na sequência pós-fixada
+        term();
+        while (currentToken.getType() == Token.Type.PLUS || currentToken.getType() == Token.Type.MINUS) {
+            Token.Type op = currentToken.getType();
+            advance();
+            term();
+            if (op == Token.Type.PLUS) {
+                System.out.println("add");
+            } else {
+                System.out.println("sub");
+            }
         }
     }
 
-    private void number() {
+    private void term() {
         if (currentToken.getType() == Token.Type.NUMBER) {
-            System.out.println(currentToken.getValue()); // imprime o número
-            advance(); // consome o número
+            System.out.println("push " + currentToken.getValue());
+            advance();
+        } else if (currentToken.getType() == Token.Type.IDENTIFIER) {
+            System.out.println("push " + currentToken.getValue());
+            advance();
         } else {
-            throw new RuntimeException("Erro de sintaxe: esperado número, encontrado " + currentToken.getType());
+            throw new RuntimeException("Erro de sintaxe: esperado número ou variável, encontrado " + currentToken.getType());
+        }
+    }
+
+    private void match(Token.Type expected) {
+        if (currentToken.getType() == expected) {
+            advance();
+        } else {
+            throw new RuntimeException("Erro de sintaxe: esperado " + expected + ", encontrado " + currentToken.getType());
         }
     }
 
@@ -48,3 +82,4 @@ public class Parser {
         currentToken = lexer.getNextToken();
     }
 }
+

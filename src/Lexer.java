@@ -14,6 +14,10 @@ public class Lexer {
                 return number();
             }
 
+            if (Character.isLetter(currentChar)) {
+                return identifier();
+            }
+
             if (currentChar == '+') {
                 currentPos++;
                 return new Token(Token.Type.PLUS, "+");
@@ -24,23 +28,21 @@ public class Lexer {
                 return new Token(Token.Type.MINUS, "-");
             }
 
-            if (currentChar == '*') {
+            if (currentChar == '=') {
                 currentPos++;
-                return new Token(Token.Type.TIMES, "*");
+                return new Token(Token.Type.EQUAL, "=");
             }
 
-            if (currentChar == '/') {
+            if (currentChar == ';') {
                 currentPos++;
-                return new Token(Token.Type.DIVIDE, "/");
+                return new Token(Token.Type.SEMICOLON, ";");
             }
 
-            // Ignorar espaços em branco
             if (Character.isWhitespace(currentChar)) {
                 currentPos++;
                 continue;
             }
 
-            // Se encontrar um caractere inesperado
             throw new RuntimeException("Erro léxico: caractere inválido '" + currentChar + "'");
         }
 
@@ -48,11 +50,23 @@ public class Lexer {
     }
 
     private Token number() {
-        StringBuilder numberValue = new StringBuilder();
+        StringBuilder value = new StringBuilder();
         while (currentPos < input.length && Character.isDigit(input[currentPos])) {
-            numberValue.append(input[currentPos]);
-            currentPos++;
+            value.append(input[currentPos++]);
         }
-        return new Token(Token.Type.NUMBER, numberValue.toString());
+        return new Token(Token.Type.NUMBER, value.toString());
+    }
+
+    private Token identifier() {
+        StringBuilder value = new StringBuilder();
+        while (currentPos < input.length && Character.isLetterOrDigit(input[currentPos])) {
+            value.append(input[currentPos++]);
+        }
+        String word = value.toString();
+        return switch (word) {
+            case "let" -> new Token(Token.Type.LET, word);
+            case "print" -> new Token(Token.Type.PRINT, word);
+            default -> new Token(Token.Type.IDENTIFIER, word);
+        };
     }
 }

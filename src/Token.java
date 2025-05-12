@@ -1,6 +1,15 @@
 public class Token {
+
     public enum Type {
-        NUMBER, PLUS, MINUS, TIMES, DIVIDE, EOF
+        NUMBER,     // número
+        PLUS,       // +
+        MINUS,      // -
+        LET,        // let
+        IDENTIFIER, // variáveis
+        EQUAL,      // =
+        PRINT,      // print
+        SEMICOLON,  // ;
+        EOF         // fim da entrada
     }
 
     private final Type type;
@@ -27,3 +36,4 @@ public class Token {
                 '}';
     }
 }
+
