@@ -1,73 +1,66 @@
+// Scanner.java
 public class Scanner {
+    private final String input;
+    private int currentIndex = 0;
 
-    private final byte[] input;
-    private int current;
-
-    public Scanner(byte[] input) {
+    public Scanner(String input) {
         this.input = input;
-        this.current = 0;
     }
 
     public Token nextToken() {
-        skipWhitespace();
-
-        if (isAtEnd()) {
-            return new Token(Token.Type.EOF, "");
+        while (currentIndex < input.length() && Character.isWhitespace(input.charAt(currentIndex))) {
+            currentIndex++;  // Ignora espaços em branco
         }
 
-        char c = (char) input[current];
+        if (currentIndex >= input.length()) {
+            return new Token(TokenType.EOF, ""); // Fim do arquivo
+        }
+
+        char currentChar = input.charAt(currentIndex);
+
+        // Identificadores e números
+        if (Character.isLetter(currentChar)) {
+            StringBuilder lexeme = new StringBuilder();
+            while (currentIndex < input.length() && Character.isLetterOrDigit(input.charAt(currentIndex))) {
+                lexeme.append(input.charAt(currentIndex));
+                currentIndex++;
+            }
+            String lexemeStr = lexeme.toString();
+            if (lexemeStr.equals("print")) {
+                return new Token(TokenType.PRINT, lexemeStr);
+            } else if (lexemeStr.equals("let")) {
+                return new Token(TokenType.LET, lexemeStr);
+            } else {
+                return new Token(TokenType.IDENT, lexemeStr);
+            }
+        }
 
         // Números
-        if (Character.isDigit(c)) {
-            return number();
+        if (Character.isDigit(currentChar)) {
+            StringBuilder lexeme = new StringBuilder();
+            while (currentIndex < input.length() && Character.isDigit(input.charAt(currentIndex))) {
+                lexeme.append(input.charAt(currentIndex));
+                currentIndex++;
+            }
+            return new Token(TokenType.NUMBER, lexeme.toString());
         }
 
-        // Identificadores ou palavras-chave
-        if (Character.isLetter(c)) {
-            return identifierOrKeyword();
+        // Operadores e outros caracteres
+        switch (currentChar) {
+            case '+':
+                currentIndex++;
+                return new Token(TokenType.PLUS, "+");
+            case '-':
+                currentIndex++;
+                return new Token(TokenType.MINUS, "-");
+            case '=':
+                currentIndex++;
+                return new Token(TokenType.EQ, "=");
+            case ';':
+                currentIndex++;
+                return new Token(TokenType.SEMICOLON, ";");
+            default:
+                throw new Error("Unexpected character: " + currentChar);
         }
-
-        // Símbolos únicos (usando o novo switch)
-        return switch (c) {
-            case '+' -> new Token(Token.Type.PLUS, "+");
-            case '-' -> new Token(Token.Type.MINUS, "-");
-            case '=' -> new Token(Token.Type.EQUAL, "=");
-            case ';' -> new Token(Token.Type.SEMICOLON, ";");
-            default -> throw new RuntimeException("Caractere inesperado: " + c);
-        };
-    }
-
-    private Token number() {
-        return new Token(Token.Type.NUMBER, consumeWhile(Character::isDigit));
-    }
-
-    private Token identifierOrKeyword() {
-        String value = consumeWhile(Character::isLetter);
-        return switch (value) {
-            case "let" -> new Token(Token.Type.LET, value);
-            case "print" -> new Token(Token.Type.PRINT, value);
-            default -> new Token(Token.Type.IDENTIFIER, value);
-        };
-    }
-
-    private String consumeWhile(java.util.function.Predicate<Character> condition) {
-        StringBuilder sb = new StringBuilder();
-        while (!isAtEnd() && condition.test((char) input[current])) {
-            sb.append((char) input[current]);
-            current++;
-        }
-        return sb.toString();
-    }
-
-    private void skipWhitespace() {
-        while (!isAtEnd() && Character.isWhitespace((char) input[current])) {
-            current++;
-        }
-    }
-
-    private boolean isAtEnd() {
-        return current >= input.length;
     }
 }
-
-
