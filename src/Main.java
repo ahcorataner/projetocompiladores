@@ -1,13 +1,18 @@
-// Main.java
 public class Main {
     public static void main(String[] args) {
-        String input = """
-            let a = 42 + 5 - 8;
-            let b = 56 + 8;
-            print a + b + 6;
+
+        String codigo = """
+            PUSH 10
+            PUSH 5
+            ADD
+            POP x
+            PUSH x
+            PUSH 2
+            SUB
+            PRINT
         """;
 
-        Parser parser = new Parser(input);
-        parser.parse();
+        Interpretador interpretador = new Interpretador(codigo);
+        interpretador.run();
     }
 }
